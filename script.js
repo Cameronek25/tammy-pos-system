@@ -311,16 +311,125 @@ function updateOrderStatus(orderId, newStatus) {
 }
 
 function initKitchenPage() {
-  const employee = populateSessionHeader();
-  if (!employee) return;
+   const employee = localStorage.getItem("tammy-session-pin");
 
-  const search = document.getElementById("searchOrders");
-  renderKitchenOrders();
-  if (search) {
-    search.addEventListener("input", function () {
+  if (!employee) {
+    window.location.href = "./index.html";
+    return;
+  }
+
+  const welcomeName = document.getElementById("welcomeName");
+  const welcomeRole = document.getElementById("welcomeRole");
+  const kitchenOrders = document.getElementById("kitchenOrders");
+  const searchInput = document.getElementById("searchOrders");
+
+  if (welcomeName) welcomeName.textContent = employee;
+  if (welcomeRole) welcomeRole.textContent = "Kitchen";
+
+  let orders = JSON.parse(localStorage.getItem("tammy-orders")) || [];
+
+  function renderKitchenOrders(filter = "") {
+    if (!kitchenOrders) return;
+
+    const filteredOrders = orders.filter((order) => {
+      const searchText = filter.toLowerCase();
+
+      return (
+        (order.id || "").toLowerCase().includes(searchText) ||
+        String(order.table || "").toLowerCase().includes(searchText) ||
+        (order.server || "").toLowerCase().includes(searchText) ||
+        (order.status || "").toLowerCase().includes(searchText)
+      );
+    });
+
+    document.getElementById("statTotal").textContent = orders.length;
+    document.getElementById("statSubmitted").textContent = orders.filter(
+      (o) => o.status === "Submitted"
+    ).length;
+    document.getElementById("statInKitchen").textContent = orders.filter(
+      (o) => o.status === "In Kitchen"
+    ).length;
+    document.getElementById("statReady").textContent = orders.filter(
+      (o) => o.status === "Ready"
+    ).length;
+
+    if (filteredOrders.length === 0) {
+      kitchenOrders.innerHTML = `
+        <div class="panel">
+          <h3 style="margin-top:0;">No orders found</h3>
+          <p style="color: var(--muted); margin-bottom:0;">
+            Submitted orders will appear here.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+    kitchenOrders.innerHTML = filteredOrders
+      .map((order, index) => {
+        const itemsHtml = (order.items && order.items.length)
+          ? order.items.map(item => `
+              <li>
+                ${item.quantity || 1} × ${item.name || "Item"}
+                ${item.modifiers ? `<div style="color: var(--muted); font-size: 14px;">${item.modifiers}</div>` : ""}
+              </li>
+            `).join("")
+          : `<li>No items listed</li>`;
+
+        const realIndex = orders.findIndex((o) => o.id === order.id);
+
+        return `
+          <div class="panel">
+            <div class="section-header" style="margin-bottom: 12px;">
+              <div>
+                <h3 style="margin: 0;">Table ${order.table || "—"}</h3>
+                <p style="margin: 6px 0 0; color: var(--muted);">
+                  Order ID: ${order.id || "N/A"} • Status: ${order.status || "Submitted"}
+                </p>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+              <strong>Server:</strong> ${order.server || "Employee"}<br>
+              <strong>Guests:</strong> ${order.guests || "—"}<br>
+              <strong>Allergies:</strong> ${order.allergies || "None"}<br>
+              <strong>Notes:</strong> ${order.notes || "None"}
+            </div>
+
+            <div style="margin-bottom: 14px;">
+              <strong>Items</strong>
+              <ul style="margin: 8px 0 0 18px; padding: 0;">
+                ${itemsHtml}
+              </ul>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+              <button class="btn-secondary" onclick="updateKitchenStatus(${realIndex}, 'In Kitchen')">
+                Mark In Kitchen
+              </button>
+              <button class="btn-primary" onclick="updateKitchenStatus(${realIndex}, 'Ready')">
+                Mark Ready
+              </button>
+            </div>
+          </div>
+        `;
+      })
+      .join("");
+  }
+
+  window.updateKitchenStatus = function(index, newStatus) {
+    orders[index].status = newStatus;
+    localStorage.setItem("tammy-orders", JSON.stringify(orders));
+    renderKitchenOrders(searchInput ? searchInput.value : "");
+  };
+
+  if (searchInput) {
+    searchInput.addEventListener("input", function () {
       renderKitchenOrders(this.value);
     });
   }
+
+  renderKitchenOrders();
 }
 
 function renderManagerStats() {

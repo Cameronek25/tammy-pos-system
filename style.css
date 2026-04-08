@@ -319,3 +319,89 @@ textarea{min-height:120px;resize:vertical}.soft{background:#f8fafc;border-radius
   background: #1f2937;
   color: white;
 }
+.kitchen-hero {
+  background: linear-gradient(135deg, #f7f8fc 0%, #eef3fb 100%);
+  border: 1px solid #dfe6f2;
+}
+
+.session-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.refined-sidebar {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.kitchen-main-panel {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+}
+
+.kitchen-header {
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.refined-search input {
+  min-width: 280px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.04);
+}
+
+.kitchen-grid {
+  margin-top: 22px;
+}
+
+.kitchen-stat {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e3e8f0;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05);
+}
+
+#kitchenOrders .panel {
+  border-radius: 22px;
+  border: 1px solid #e4e8ef;
+  background: linear-gradient(180deg, #ffffff 0%, #fafbfd 100%);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+  padding: 22px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+#kitchenOrders .panel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.08);
+}
+
+#kitchenOrders h3 {
+  font-size: 1.15rem;
+  margin-bottom: 4px;
+}
+
+#kitchenOrders ul {
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+#kitchenOrders strong {
+  color: #1f2b3d;
+}
+
+#kitchenOrders .btn-primary,
+#kitchenOrders .btn-secondary {
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+@media (max-width: 900px) {
+  .refined-search input {
+    min-width: 100%;
+    width: 100%;
+  }
+
+  .kitchen-header {
+    flex-direction: column;
+  }
+}
