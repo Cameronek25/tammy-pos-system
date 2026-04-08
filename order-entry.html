@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Entry</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="panel hero">
+        <p class="eyebrow">Step 2 • Order Entry</p>
+        <h1>Build Ticket</h1>
+        <p>Select menu items, add quantities, and submit the ticket to the kitchen.</p>
+      </div>
+      <div class="panel quick-card">
+        <div class="header-mini">
+          <div>
+            <h3 style="margin:0 0 8px">Order Snapshot</h3>
+            <p style="margin:0;color:var(--muted)">Employee <strong id="welcomeName">—</strong></p>
+          </div>
+          <button class="btn-secondary" type="button" onclick="logout()">Log Out</button>
+        </div>
+        <div class="mini-stats" style="margin-top:14px">
+          <div class="mini-stat"><span class="label">Table</span><span class="value" id="summaryTable">—</span></div>
+          <div class="mini-stat"><span class="label">Guests</span><span class="value" id="summaryGuests">—</span></div>
+          <div class="mini-stat"><span class="label">Allergies</span><span class="value" id="summaryAllergies">—</span></div>
+          <div class="mini-stat"><span class="label">Items</span><span class="value" id="summaryCount">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="panel sidebar">
+        <h3>Navigation</h3>
+        <a class="nav-link" href="./dashboard.html">Dashboard</a>
+        <a class="nav-link active" href="./create-order.html">Create Order</a>
+        <a class="nav-link" href="./kitchen-queue.html">Kitchen Queue</a>
+        <a class="nav-link" href="./manager.html">Manager Tools</a>
+      </aside>
+
+      <main class="content">
+        <section class="panel">
+          <div class="section-header">
+            <div>
+              <h2>Add Menu Item</h2>
+              <p>Choose an item, set quantity, and optionally add a modifier.</p>
+            </div>
+          </div>
+          <div class="form-grid form-order">
+            <div>
+              <label for="menuItem">Menu Item</label>
+              <select id="menuItem"></select>
+            </div>
+            <div>
+              <label for="itemQty">Qty</label>
+              <input id="itemQty" type="number" min="1" value="1" />
+            </div>
+            <div>
+              <button id="addItemBtn" class="btn-accent" type="button">Add Item</button>
+            </div>
+          </div>
+          <div>
+            <label for="itemModifier">Modifier / Notes</label>
+            <textarea id="itemModifier" placeholder="No onions, extra sauce, sauce on side, etc."></textarea>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-header">
+            <div>
+              <h2>Current Ticket</h2>
+              <p id="ticketContext">Review the order before sending it to the kitchen.</p>
+            </div>
+          </div>
+          <div class="stack" id="ticketItems"></div>
+          <div class="row" style="margin-top:18px; flex-wrap:wrap;">
+            <button class="btn-secondary" type="button" onclick="window.location.href='./create-order.html'">Back</button>
+            <button class="btn-secondary" type="button" id="clearTicketBtn">Clear Ticket</button>
+            <button class="btn-primary" type="button" id="submitOrderBtn">Submit To Kitchen</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", initOrderEntryPage);
+  </script>
+</body>
+</html>

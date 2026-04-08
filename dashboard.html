@@ -3,360 +3,233 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tammy's Bar & Grille</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
- 
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
-
-:root {
-  --bg: #f3f4f7;              /* slightly darker + cooler */
-  --surface: #ffffff;
-
-  --text: #1e1e1e;
-  --muted: #8f887f;           /* slightly darker for readability */
-
-  --border: #e5ded4;
-
-  --accent: #5b7dbf;          /* stronger, cleaner blue */
-  --accent-dark: #3f5ea0;
-  --accent-soft: #d6deec;
-
-  --shadow: 0 8px 22px rgba(0, 0, 0, 0.05);
-
-  --gold: #b99a61;            /* keep subtle, not dominant */
-
-  --ready: #e4f3e6;
-  --cooking: #f5e7c5;
-  --submitted: #e3ecf9;
-  --open: #efe9df;
-}
-
-  * {
-    box-sizing: border-box;
-  }
-
-body {
-  margin: 0;
-  padding: 32px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: linear-gradient(to bottom, #f4f6f9, #ebeff2);
-  color: var(--text);
-  line-height: 1.5;
-}
-
-  .page {
-    max-width: 1280px;
-    margin: 0 auto;
-  }
-
-  .topbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 18px;
-    border-radius: 12px;
-    margin-bottom: 34px;
-    background: var(--accent-soft);
-    border-color: var(--accent);
-  }
-
-  .brand {
-    font-family: 'Playfair Display', serif;
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: 0.4px;
-    color: var(--text);
-  }
-
-  .topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-
-  .employee-text {
-    font-size: 14px;
-    color: var(--muted);
-    font-weight: 500;
-  }
-
-  .logout-btn {
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    border-radius: 12px;
-    padding: 10px 16px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: var(--shadow);
-    transition: all 0.18s ease;
-  }
-
-  .logout-btn:hover {
-    background: var(--accent-soft);
-    border-color: var(--accent);
-    transform: translateY(-1px);
-  }
-
-  .actions {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 18px;
-    margin-bottom: 46px;
-  }
-
-  .action-card {
-    min-height: 92px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    text-decoration: none;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 17px;
-    font-weight: 600;
-    transition: all 0.18s ease;
-    gap: 14px;
-  }
-
-  .action-card:hover {
-    transform: translateY(-1px);
-    border-color: var(--accent);
-  }
-
-  .action-card.active {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-  }
-
-  .tables-header {
-    margin-top: 6px;
-    margin-bottom: 26px;
-  }
-
-  .tables-header h2 {
-    margin: 0 0 6px;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text);
-  }
-
-  .tables-header p {
-    margin: 0;
-    font-size: 14px;
-    color: var(--muted);
-    font-weight: 500;
-  }
-
-  .tables-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 34px 44px;
-    justify-items: center;
-  }
-
-  .table-circle {
-    width: 190px;
-    height: 190px;
-    border-radius: 50%;
-    text-decoration: none;
-    color: var(--text);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
-    border: 1px solid rgba(0, 0, 0, 0.03);
-    transition: all 0.18s ease;
-  }
-
-  .table-circle:hover {
-    transform: scale(1.04);
-  }
-
-  .table-circle.ready {
-    background: var(--ready);
-  }
-
-  .table-circle.cooking {
-    background: var(--cooking);
-  }
-
-  .table-circle.submitted {
-    background: var(--submitted);
-  }
-
-  .table-circle.open {
-    background: var(--open);
-  }
-
-  .table-number {
-    font-size: 38px;
-    font-weight: 700;
-    line-height: 1;
-    margin-bottom: 10px;
-  }
-
-  .table-status {
-    font-size: 13px;
-    color: var(--muted);
-    font-weight: 600;
-  }
-
-  @media (max-width: 1100px) {
-    .actions {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  <title>Tammy's Bar &amp; Grille</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --surface: #ffffff;
+      --text: #1e1e1e;
+      --muted: #8f887f;
+      --border: #e5ded4;
+      --accent: #5b7dbf;
+      --accent-soft: #d6deec;
+      --shadow: 0 8px 22px rgba(0, 0, 0, 0.05);
+      --ready: #e4f3e6;
+      --cooking: #f5e7c5;
+      --submitted: #e3ecf9;
+      --open: #efe9df;
     }
 
-    .tables-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
+    * { box-sizing: border-box; }
 
-  @media (max-width: 700px) {
     body {
-      padding: 20px;
+      margin: 0;
+      padding: 32px;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(to bottom, #f4f6f9, #ebeff2);
+      color: var(--text);
+      line-height: 1.5;
     }
+
+    .page { max-width: 1280px; margin: 0 auto; }
 
     .topbar {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .topbar-right {
-      width: 100%;
+      display: flex;
       justify-content: space-between;
-    }
-
-    .actions,
-    .tables-grid {
-      grid-template-columns: 1fr;
+      align-items: center;
+      padding: 12px 18px;
+      border-radius: 12px;
+      margin-bottom: 34px;
+      background: var(--accent-soft);
     }
 
     .brand {
-      font-size: 20px;
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .employee-text { font-size: 14px; color: var(--muted); font-weight: 500; }
+
+    .logout-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      transition: all 0.18s ease;
+    }
+
+    .logout-btn:hover {
+      background: #eef3ff;
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 46px;
     }
 
     .action-card {
-      min-height: 84px;
-      font-size: 16px;
+      min-height: 92px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      font-weight: 600;
+      gap: 14px;
+      transition: all 0.18s ease;
     }
 
-    .table-circle {
-      width: 180px;
-      height: 180px;
+    .action-card:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
     }
 
-    .table-number {
-      font-size: 34px;
+    .action-card.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
     }
+
     .action-icon {
       font-size: 15px;
-      opacity: 0.55;
+      opacity: 0.65;
       display: inline-flex;
       align-items: center;
     }
-  }
-</style>
 
+    .tables-header { margin-top: 6px; margin-bottom: 26px; }
+    .tables-header h2 { margin: 0 0 6px; font-size: 24px; font-weight: 700; }
+    .tables-header p { margin: 0; font-size: 14px; color: var(--muted); font-weight: 500; }
+
+    .tables-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 34px 44px;
+      justify-items: center;
+    }
+
+    .table-circle {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+      border: 1px solid rgba(0, 0, 0, 0.03);
+      transition: all 0.18s ease;
+      text-align: center;
+      padding: 16px;
+    }
+
+    .table-circle:hover { transform: scale(1.04); }
+    .table-circle.ready { background: var(--ready); }
+    .table-circle.cooking { background: var(--cooking); }
+    .table-circle.submitted { background: var(--submitted); }
+    .table-circle.open { background: var(--open); }
+
+    .table-number { font-size: 38px; font-weight: 700; line-height: 1; margin-bottom: 10px; }
+    .table-status { font-size: 13px; color: var(--muted); font-weight: 600; }
+    .table-meta { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+    @media (max-width: 1100px) {
+      .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .tables-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 20px; }
+      .topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .topbar-right { width: 100%; justify-content: space-between; }
+      .actions, .tables-grid { grid-template-columns: 1fr; }
+      .brand { font-size: 20px; }
+      .action-card { min-height: 84px; font-size: 16px; }
+      .table-circle { width: 180px; height: 180px; }
+      .table-number { font-size: 34px; }
+    }
+  </style>
 </head>
 <body>
   <div class="page">
+    <div class="topbar">
+      <div class="brand">Tammy’s Bar &amp; Grille</div>
+      <div class="topbar-right">
+        <span class="employee-text">Employee <strong id="employeeId"></strong></span>
+        <button type="button" class="logout-btn" onclick="logout()">Log Out</button>
+      </div>
+    </div>
 
-<div class="topbar">
-  <div class="brand">Tammy’s Bar &amp; Grille</div>
-
-  <div class="topbar-right">
-    <span class="employee-text">Employee <strong id="employeeId"></strong></span>
-    <button class="logout-btn" onclick="logout()">Log Out</button>
-  </div>
-</div>
-
-<div class="actions">
-  <a href="dashboard.html" class="action-card active">
-    <span class="action-icon">◫</span>
-    <span class="action-text">Dashboard</span>
-  </a>
-
-  <a href="create-order.html" class="action-card">
-    <span class="action-icon">＋</span>
-    <span class="action-text">Create Order</span>
-  </a>
-
-  <a href="kitchen-queue.html" class="action-card">
-    <span class="action-icon">≣</span>
-    <span class="action-text">Kitchen Queue</span>
-  </a>
-
-  <a href="manager.html" class="action-card">
-    <span class="action-icon">⚙</span>
-    <span class="action-text">Manager Tools</span>
-  </a>
-</div>
+    <div class="actions">
+      <a href="./dashboard.html" class="action-card active"><span class="action-icon">◫</span><span>Dashboard</span></a>
+      <a href="./create-order.html" class="action-card"><span class="action-icon">＋</span><span>Create Order</span></a>
+      <a href="./kitchen-queue.html" class="action-card"><span class="action-icon">≣</span><span>Kitchen Queue</span></a>
+      <a href="./manager.html" class="action-card"><span class="action-icon">⚙</span><span>Manager Tools</span></a>
+    </div>
 
     <div class="tables-header">
       <h2>My Tables</h2>
       <p>Select a table to manage orders.</p>
     </div>
 
-    <div class="tables-grid">
-      <a href="create-order.html" class="table-circle ready">
-        <span class="table-number">12</span>
-        <span class="table-status">Ready</span>
-      </a>
-
-      <a href="create-order.html" class="table-circle cooking">
-        <span class="table-number">8</span>
-        <span class="table-status">In Kitchen</span>
-      </a>
-
-      <a href="create-order.html" class="table-circle submitted">
-        <span class="table-number">5</span>
-        <span class="table-status">Submitted</span>
-      </a>
-
-      <a href="create-order.html" class="table-circle open">
-        <span class="table-number">3</span>
-        <span class="table-status">Open</span>
-      </a>
-
-      <a href="create-order.html" class="table-circle cooking">
-        <span class="table-number">10</span>
-        <span class="table-status">In Kitchen</span>
-      </a>
-
-      <a href="create-order.html" class="table-circle open">
-        <span class="table-number">15</span>
-        <span class="table-status">Open</span>
-      </a>
-    </div>
-
-
+    <div class="tables-grid" id="tablesGrid"></div>
   </div>
 
+    <script src="./script.js"></script>
   <script>
-  function logout() {
-    localStorage.removeItem("tammy-session-pin");
-    window.location.href = "index.html";
-  }
+    document.addEventListener("DOMContentLoaded", function () {
+      const empId = requireLogin();
+      if (!empId) return;
 
-  // Set employee ID dynamically
-  document.addEventListener("DOMContentLoaded", function () {
-    const empId = localStorage.getItem("tammy-session-pin");
+      const display = document.getElementById("employeeId");
+      if (display) display.textContent = empId;
 
-    const display = document.getElementById("employeeId");
-    if (display) {
-      display.textContent = empId;
-    }
-  });
-</script>
+      const tableNumbers = ["1","2","3","4","5","6","7","8","9"];
+      const grid = document.getElementById("tablesGrid");
+
+      grid.innerHTML = tableNumbers.map(tableNumber => {
+        const order = getLatestOrderForTable(tableNumber, empId);
+
+        let statusClass = "open";
+        let statusLabel = "Open";
+        let metaLabel = "No order yet";
+
+        if (order) {
+          if (order.status === "Ready") statusClass = "ready";
+          else if (order.status === "In Kitchen") statusClass = "cooking";
+          else if (order.status === "Submitted") statusClass = "submitted";
+
+          statusLabel = order.status;
+          metaLabel = `${order.items.length} item(s)`;
+        }
+
+        return `
+          <a href="./table-details.html?table=${tableNumber}" class="table-circle ${statusClass}">
+            <span class="table-number">${tableNumber}</span>
+            <span class="table-status">${statusLabel}</span>
+            <span class="table-meta">${metaLabel}</span>
+          </a>`;
+      }).join("");
+    });
+  </script>
 </body>
 </html>

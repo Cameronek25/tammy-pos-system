@@ -442,8 +442,23 @@
 
     document.addEventListener("DOMContentLoaded", function () {
       const empId = localStorage.getItem("tammy-session-pin");
+      if (!empId) {
+        window.location.href = "./index.html";
+        return;
+      }
+
       const topDisplay = document.getElementById("employeeId");
       const summaryDisplay = document.getElementById("summaryEmployee");
+      const tableInput = document.getElementById("tableNumber");
+      const guestInput = document.getElementById("guestCount");
+      const allergyInput = document.getElementById("allergies");
+      const notesInput = document.getElementById("notes");
+
+      const params = new URLSearchParams(window.location.search);
+      const tableFromUrl = params.get("table") || localStorage.getItem("active-table") || "";
+      const guestFromStorage = localStorage.getItem("active-guests") || "";
+      const allergiesFromStorage = localStorage.getItem("active-allergies") || "";
+      const notesFromStorage = localStorage.getItem("active-notes") || "";
 
       if (topDisplay) {
         topDisplay.textContent = empId || "—";
@@ -452,6 +467,11 @@
       if (summaryDisplay) {
         summaryDisplay.textContent = empId || "—";
       }
+
+      if (tableInput && tableFromUrl) tableInput.value = tableFromUrl;
+      if (guestInput && guestFromStorage) guestInput.value = guestFromStorage;
+      if (allergyInput && allergiesFromStorage) allergyInput.value = allergiesFromStorage;
+      if (notesInput && notesFromStorage) notesInput.value = notesFromStorage;
     });
 
     function startOrder() {

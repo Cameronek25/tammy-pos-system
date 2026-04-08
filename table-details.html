@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Table Details</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="panel hero">
+        <p class="eyebrow">Systems Analysis and Design Prototype</p>
+        <h1>Table <span id="tableHeading">—</span></h1>
+        <p>Review the latest order details for this table or start a new order.</p>
+      </div>
+      <div class="panel quick-card">
+        <div class="header-mini">
+          <div>
+            <h3 style="margin:0 0 8px">Employee Session</h3>
+            <p style="margin:0;color:var(--muted)">Logged in as <strong id="welcomeName">Employee</strong> • <span id="welcomeRole">Role</span></p>
+          </div>
+          <button class="btn-secondary" type="button" onclick="logout()">Log Out</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="panel sidebar">
+        <h3>Navigation</h3>
+        <a class="nav-link" href="./dashboard.html">Dashboard</a>
+        <a class="nav-link" href="./create-order.html">Create Order</a>
+        <a class="nav-link" href="./kitchen-queue.html">Kitchen Queue</a>
+        <a id="managerNav" class="nav-link" href="./manager.html">Manager Tools</a>
+      </aside>
+
+      <main class="content">
+        <section class="panel">
+          <div class="section-header">
+            <div>
+              <h2>Table Status</h2>
+              <p>Latest information currently saved for this table.</p>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="panel stat"><span class="label">Table</span><span class="value" id="detailTable">—</span></div>
+            <div class="panel stat"><span class="label">Status</span><span class="value" id="detailStatus">Open</span></div>
+            <div class="panel stat"><span class="label">Guests</span><span class="value" id="detailGuests">—</span></div>
+            <div class="panel stat"><span class="label">Items</span><span class="value" id="detailItems">0</span></div>
+          </div>
+
+          <div id="tableDetailCard" class="ticket" style="margin-top:18px"></div>
+
+          <div class="row" style="margin-top:18px; flex-wrap:wrap;">
+            <button class="btn-secondary" type="button" onclick="window.location.href='./dashboard.html'">Back to Dashboard</button>
+            <button class="btn-primary" type="button" id="startOrderBtn">Create / Update Order</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="./script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const employee = populateSessionHeader();
+      if (!employee) return;
+
+      const params = new URLSearchParams(window.location.search);
+      const table = params.get("table") || "";
+      if (!table) {
+        window.location.href = "./dashboard.html";
+        return;
+      }
+
+      document.getElementById("tableHeading").textContent = table;
+      document.getElementById("detailTable").textContent = table;
+      document.getElementById("startOrderBtn").onclick = function () {
+        window.location.href = "./create-order.html?table=" + encodeURIComponent(table);
+      };
+
+      const latest = getLatestOrderForTable(table, getEmployeeId());
+      const card = document.getElementById("tableDetailCard");
+
+      if (!latest) {
+        card.innerHTML = `
+          <strong>No order submitted yet for Table ${table}.</strong>
+          <div class="footer-note" style="margin-top:10px">Use Create / Update Order to start a new ticket for this table.</div>
+        `;
+        return;
+      }
+
+      document.getElementById("detailStatus").textContent = latest.status || "Open";
+      document.getElementById("detailGuests").textContent = latest.guests || "—";
+      document.getElementById("detailItems").textContent = Array.isArray(latest.items) ? latest.items.length : 0;
+
+      card.innerHTML = `
+        <div class="row" style="align-items:flex-start">
+          <div>
+            <strong>Latest Ticket: ${escapeHtml(latest.id)}</strong>
+            <div class="table-meta">Submitted by ${escapeHtml(latest.employeeName || latest.employeeId || "")}</div>
+            <div class="table-meta">${escapeHtml(latest.createdAt || "")}</div>
+          </div>
+          <span class="badge status-${(latest.status || "Open").replace(/\s+/g,"")}">${escapeHtml(latest.status || "Open")}</span>
+        </div>
+        ${latest.allergies && latest.allergies !== "—" ? `<div class="badge" style="margin-top:12px;background:#fee2e2;color:#b91c1c">Allergy: ${escapeHtml(latest.allergies)}</div>` : ""}
+        ${latest.notes ? `<div class="footer-note" style="margin-top:12px">Notes: ${escapeHtml(latest.notes)}</div>` : ""}
+        <div class="table-orders">
+          <ul>
+            ${(latest.items || []).map(item => `<li>${escapeHtml(item.name)} × ${item.quantity}${item.modifier ? ` — ${escapeHtml(item.modifier)}` : ""}</li>`).join("")}
+          </ul>
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>
