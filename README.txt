@@ -1,1 +1,0 @@
-Start with login.html. Demo credentials: Mia 1024, Lucas 2048, Sofia 4096. Upload all files to GitHub Pages.
