@@ -166,14 +166,6 @@
       line-height: 1.2;
     }
 
-    .form-header p {
-      margin: 0;
-      font-size: 15px;
-      color: var(--muted);
-      font-weight: 500;
-      max-width: 560px;
-    }
-
     .summary-strip {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -354,33 +346,32 @@
 </head>
 <body>
   <div class="page">
-
     <div class="topbar">
       <div class="brand">Tammy’s Bar &amp; Grille</div>
 
       <div class="topbar-right">
         <span class="employee-text">Employee <strong id="employeeId"></strong></span>
-        <button class="logout-btn" onclick="logout()">Log Out</button>
+        <button type="button" class="logout-btn" onclick="logout()">Log Out</button>
       </div>
     </div>
 
     <div class="actions">
-      <a href="dashboard.html" class="action-card">
+      <a href="./dashboard.html" class="action-card">
         <span class="action-icon">◫</span>
         <span>Dashboard</span>
       </a>
 
-      <a href="create-order.html" class="action-card active">
+      <a href="./create-order.html" class="action-card active">
         <span class="action-icon">＋</span>
         <span>Order Details</span>
       </a>
 
-      <a href="kitchen-queue.html" class="action-card">
+      <a href="./kitchen-queue.html" class="action-card">
         <span class="action-icon">≣</span>
         <span>Kitchen Queue</span>
       </a>
 
-      <a href="manager.html" class="action-card">
+      <a href="./manager.html" class="action-card">
         <span class="action-icon">⚙</span>
         <span>Manager Tools</span>
       </a>
@@ -421,53 +412,52 @@
           <input type="number" id="guestCount" placeholder="Optional">
         </div>
 
-      <div class="form-group full">
+        <div class="form-group full">
           <label for="allergies">Allergy Alert</label>
           <input type="text" id="allergies" placeholder="Enter allergies (e.g., peanuts, dairy, gluten)">
-      </div>
+        </div>
 
-  <div class="form-group full">
-      <label for="notes">Additional Notes</label>
-      <textarea id="notes" placeholder="Special requests, preferences, etc.">
-      </textarea>
-  </div>
+        <div class="form-group full">
+          <label for="notes">Additional Notes</label>
+          <textarea id="notes" placeholder="Special requests, preferences, etc."></textarea>
+        </div>
+      </div>
 
       <div class="button-row">
-        <button class="primary-btn" onclick="startOrder()">Continue</button>
-        <button class="secondary-btn" onclick="goBack()">Cancel</button>
+        <button type="button" class="primary-btn" onclick="startOrder()">Continue</button>
+        <button type="button" class="secondary-btn" onclick="goBack()">Cancel</button>
       </div>
     </div>
-
   </div>
 
   <script>
     function logout() {
       localStorage.removeItem("tammy-session-pin");
-      window.location.href = "index.html";
+      window.location.href = "./index.html";
     }
 
     function goBack() {
-      window.location.href = "dashboard.html";
+      window.location.href = "./dashboard.html";
     }
 
     document.addEventListener("DOMContentLoaded", function () {
       const empId = localStorage.getItem("tammy-session-pin");
-
-      //if (!empId) {
-        //window.location.href = "index.html";
-        //return;
-      //}
-
       const topDisplay = document.getElementById("employeeId");
       const summaryDisplay = document.getElementById("summaryEmployee");
 
-      if (topDisplay) topDisplay.textContent = empId;
-      if (summaryDisplay) summaryDisplay.textContent = empId;
+      if (topDisplay) {
+        topDisplay.textContent = empId || "—";
+      }
+
+      if (summaryDisplay) {
+        summaryDisplay.textContent = empId || "—";
+      }
     });
 
     function startOrder() {
       const table = document.getElementById("tableNumber").value.trim();
       const guestCount = document.getElementById("guestCount").value.trim();
+      const allergies = document.getElementById("allergies").value.trim();
       const notes = document.getElementById("notes").value.trim();
 
       if (!table) {
@@ -477,9 +467,10 @@
 
       localStorage.setItem("active-table", table);
       localStorage.setItem("active-guests", guestCount);
+      localStorage.setItem("active-allergies", allergies);
       localStorage.setItem("active-notes", notes);
 
-      alert("Order started for table " + table + ".");
+      window.location.href = "./order-entry.html";
     }
   </script>
 </body>
