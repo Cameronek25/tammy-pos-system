@@ -352,11 +352,6 @@ body {
   document.addEventListener("DOMContentLoaded", function () {
     const empId = localStorage.getItem("tammy-session-pin");
 
-    if (!empId) {
-      window.location.href = "index.html";
-      return;
-    }
-
     const display = document.getElementById("employeeId");
     if (display) {
       display.textContent = empId;
