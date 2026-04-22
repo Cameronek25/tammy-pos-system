@@ -1,5 +1,7 @@
 const EMPLOYEES = {
-  "1234": { name: "Demo User", role: "Manager" }
+  "1234": { id: "1234", name: "Emma", role: "Server" },
+  "2222": { id: "2222", name: "Liam", role: "Server" },
+  "9999": { id: "9999", name: "Sophia", role: "Manager" }
 };
 
 const DEFAULT_MENU = [
@@ -11,6 +13,10 @@ const DEFAULT_MENU = [
   { id: 6, name: "Sparkling Water", category: "Drinks", price: 5 }
 ];
 
+/* -----------------------------
+   SESSION / AUTH
+----------------------------- */
+
 function setSession(pin) {
   localStorage.setItem("tammy-session-pin", pin);
 }
@@ -21,11 +27,17 @@ function getEmployeeId() {
 
 function getEmployee() {
   const pin = getEmployeeId();
-  return EMPLOYEES[pin] || { name: `Employee ${pin || ""}`.trim(), role: "Server" };
+  return EMPLOYEES[pin] || { id: pin || "", name: `Employee ${pin || ""}`.trim(), role: "Server" };
+}
+
+function isManager() {
+  return getEmployee().role === "Manager";
 }
 
 function logout() {
   localStorage.removeItem("tammy-session-pin");
+  localStorage.removeItem("tammy-session-name");
+  localStorage.removeItem("tammy-session-role");
   window.location.href = "./index.html";
 }
 
@@ -37,6 +49,10 @@ function requireLogin() {
   }
   return empId;
 }
+
+/* -----------------------------
+   STORAGE HELPERS
+----------------------------- */
 
 function getMenu() {
   const menu = JSON.parse(localStorage.getItem("tammy-menu"));
@@ -64,6 +80,80 @@ function getDraftOrder() {
 function saveDraftOrder(draft) {
   localStorage.setItem("tammy-draft-order", JSON.stringify(draft));
 }
+
+function getActiveTables() {
+  const tables = JSON.parse(localStorage.getItem("tammy-active-tables"));
+  return Array.isArray(tables) ? tables : [];
+}
+
+function saveActiveTables(tables) {
+  localStorage.setItem("tammy-active-tables", JSON.stringify(tables));
+}
+
+/* -----------------------------
+   TABLE WORKFLOW
+----------------------------- */
+
+function startTable(tableData) {
+  const tables = getActiveTables();
+  const existingIndex = tables.findIndex(
+    table => String(table.tableNumber) === String(tableData.tableNumber)
+  );
+
+  const payload = {
+    tableNumber: String(tableData.tableNumber),
+    guests: tableData.guests || "—",
+    allergies: tableData.allergies || "",
+    notes: tableData.notes || "",
+    employeeId: tableData.employeeId,
+    employeeName: tableData.employeeName,
+    status: tableData.status || "Open",
+    startedAt: tableData.startedAt || new Date().toLocaleString()
+  };
+
+  if (existingIndex >= 0) {
+    tables[existingIndex] = { ...tables[existingIndex], ...payload };
+  } else {
+    tables.push(payload);
+  }
+
+  saveActiveTables(tables);
+}
+
+function updateTableStatus(tableNumber, newStatus) {
+  const tables = getActiveTables().map(table =>
+    String(table.tableNumber) === String(tableNumber)
+      ? { ...table, status: newStatus }
+      : table
+  );
+  saveActiveTables(tables);
+}
+
+function removeActiveTable(tableNumber) {
+  const tables = getActiveTables().filter(
+    table => String(table.tableNumber) !== String(tableNumber)
+  );
+  saveActiveTables(tables);
+}
+
+function getServerTables(employeeId) {
+  return getActiveTables().filter(table => table.employeeId === employeeId);
+}
+
+function getLatestOrderForTable(tableNumber, employeeId = null) {
+  const orders = getOrders()
+    .filter(order =>
+      String(order.table) === String(tableNumber) &&
+      (!employeeId || order.employeeId === employeeId)
+    )
+    .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+
+  return orders[0] || null;
+}
+
+/* -----------------------------
+   UI HELPERS
+----------------------------- */
 
 function formatMoney(value) {
   return `$${Number(value).toFixed(2)}`;
@@ -107,11 +197,71 @@ function populateSessionHeader() {
 
   if (welcomeName) welcomeName.textContent = employee.name;
   if (welcomeRole) welcomeRole.textContent = employee.role;
-  if (managerNav) managerNav.style.display = "block";
+
+  if (managerNav) {
+  managerNav.style.display = isManager() ? "flex" : "none";
+}
 
   updateGlobalStats();
   return employee;
 }
+
+/* -----------------------------
+   START TABLE PAGE
+   (create-order.html)
+----------------------------- */
+
+function initCreateOrderPage() {
+  const empId = requireLogin();
+  if (!empId) return;
+
+  const employee = getEmployee();
+
+  const welcomeName = document.getElementById("welcomeName");
+  const welcomeRole = document.getElementById("welcomeRole");
+  const summaryServer = document.getElementById("summaryServer");
+
+  if (welcomeName) welcomeName.textContent = employee.name;
+  if (welcomeRole) welcomeRole.textContent = employee.role;
+  if (summaryServer) summaryServer.textContent = employee.name;
+
+  const form = document.getElementById("startTableForm");
+  if (!form) return;
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const tableNumber = document.getElementById("tableNumber")?.value.trim();
+    const guestCount = document.getElementById("guestCount")?.value.trim();
+    const allergies = document.getElementById("allergies")?.value.trim();
+    const notes = document.getElementById("notes")?.value.trim();
+
+    if (!tableNumber) {
+      alert("Please enter a table number.");
+      return;
+    }
+
+    startTable({
+      tableNumber,
+      guests: guestCount || "—",
+      allergies: allergies || "",
+      notes: notes || "",
+      employeeId: empId,
+      employeeName: employee.name,
+      status: "Open"
+    });
+
+    localStorage.setItem("active-table", tableNumber);
+    localStorage.setItem("active-guests", guestCount || "—");
+    localStorage.setItem("active-allergies", allergies || "");
+    localStorage.setItem("active-notes", notes || "");
+
+    window.location.href = "./order-entry.html";
+  });
+}
+/* -----------------------------
+   ORDER ENTRY PAGE
+----------------------------- */
 
 function initOrderEntryPage() {
   const empId = requireLogin();
@@ -130,10 +280,12 @@ function initOrderEntryPage() {
 
   const welcome = document.getElementById("welcomeName");
   if (welcome) welcome.textContent = employee.name;
+
   const summaryTable = document.getElementById("summaryTable");
   const summaryGuests = document.getElementById("summaryGuests");
   const summaryAllergies = document.getElementById("summaryAllergies");
   const context = document.getElementById("ticketContext");
+
   if (summaryTable) summaryTable.textContent = table;
   if (summaryGuests) summaryGuests.textContent = guests || "—";
   if (summaryAllergies) summaryAllergies.textContent = allergies || "—";
@@ -143,6 +295,8 @@ function initOrderEntryPage() {
   const addItemBtn = document.getElementById("addItemBtn");
   const clearBtn = document.getElementById("clearTicketBtn");
   const submitBtn = document.getElementById("submitOrderBtn");
+
+  if (!menuSelect || !addItemBtn || !clearBtn || !submitBtn) return;
 
   const menu = getMenu();
   menuSelect.innerHTML = menu.map(item => `
@@ -155,13 +309,17 @@ function initOrderEntryPage() {
   draft.allergies = allergies;
   draft.notes = notes;
   draft.employeeId = empId;
+  draft.employeeName = employee.name;
   draft.items = Array.isArray(draft.items) ? draft.items : [];
   saveDraftOrder(draft);
 
   function renderDraft() {
     const ticketItems = document.getElementById("ticketItems");
     const summaryCount = document.getElementById("summaryCount");
-    summaryCount.textContent = draft.items.length;
+
+    if (summaryCount) summaryCount.textContent = draft.items.length;
+
+    if (!ticketItems) return;
 
     if (!draft.items.length) {
       ticketItems.innerHTML = '<div class="empty">No menu items added yet.</div>';
@@ -190,8 +348,8 @@ function initOrderEntryPage() {
 
   addItemBtn.addEventListener("click", function () {
     const menuId = Number(menuSelect.value);
-    const qty = Math.max(1, Number(document.getElementById("itemQty").value) || 1);
-    const modifier = document.getElementById("itemModifier").value.trim();
+    const qty = Math.max(1, Number(document.getElementById("itemQty")?.value) || 1);
+    const modifier = document.getElementById("itemModifier")?.value.trim() || "";
     const selected = menu.find(item => item.id === menuId);
 
     if (!selected) return;
@@ -206,8 +364,10 @@ function initOrderEntryPage() {
     });
 
     saveDraftOrder(draft);
-    document.getElementById("itemQty").value = 1;
-    document.getElementById("itemModifier").value = "";
+
+    if (document.getElementById("itemQty")) document.getElementById("itemQty").value = 1;
+    if (document.getElementById("itemModifier")) document.getElementById("itemModifier").value = "";
+
     renderDraft();
   });
 
@@ -224,6 +384,7 @@ function initOrderEntryPage() {
     }
 
     const orders = getOrders();
+
     orders.push({
       id: `T${draft.table}-${Date.now().toString().slice(-5)}`,
       table: draft.table,
@@ -231,23 +392,32 @@ function initOrderEntryPage() {
       allergies: draft.allergies,
       notes: draft.notes,
       employeeId: draft.employeeId,
-      employeeName: employee.name,
+      employeeName: draft.employeeName,
       status: "Submitted",
       createdAt: new Date().toLocaleString(),
       items: draft.items
     });
 
     saveOrders(orders);
+    updateTableStatus(draft.table, "Submitted");
+
+    alert("Order sent to kitchen successfully");
+
     localStorage.removeItem("tammy-draft-order");
     localStorage.removeItem("active-table");
     localStorage.removeItem("active-guests");
     localStorage.removeItem("active-allergies");
     localStorage.removeItem("active-notes");
+
     window.location.href = "./dashboard.html";
   });
 
   renderDraft();
 }
+
+/* -----------------------------
+   KITCHEN PAGE
+----------------------------- */
 
 function renderKitchenOrders(query = "") {
   const container = document.getElementById("kitchenOrders");
@@ -281,7 +451,7 @@ function renderKitchenOrders(query = "") {
           ${order.allergies && order.allergies !== "—" ? `<div class="badge" style="margin-top:10px;background:#fee2e2;color:#b91c1c">Allergy: ${escapeHtml(order.allergies)}</div>` : ""}
           ${order.notes ? `<div class="footer-note" style="margin-top:10px">Notes: ${escapeHtml(order.notes)}</div>` : ""}
         </div>
-        <span class="badge status-${order.status.replace(/\s+/g,"")}">${escapeHtml(order.status)}</span>
+        <span class="badge status-${order.status.replace(/\s+/g, "")}">${escapeHtml(order.status)}</span>
       </div>
       <div class="table-orders">
         <ul>
@@ -302,135 +472,47 @@ function updateOrderStatus(orderId, newStatus) {
   const orders = getOrders();
   const target = orders.find(order => order.id === orderId);
   if (!target) return;
+
   target.status = newStatus;
   saveOrders(orders);
+
+  if (newStatus === "Delivered") {
+    removeActiveTable(target.table);
+  } else {
+    updateTableStatus(target.table, newStatus);
+  }
+
   updateGlobalStats();
+
   const search = document.getElementById("searchOrders");
   renderKitchenOrders(search ? search.value : "");
   renderManagerStats();
 }
 
 function initKitchenPage() {
-   const employee = localStorage.getItem("tammy-session-pin");
-
-  if (!employee) {
-    window.location.href = "./index.html";
-    return;
-  }
+  const empId = requireLogin();
+  if (!empId) return;
 
   const welcomeName = document.getElementById("welcomeName");
   const welcomeRole = document.getElementById("welcomeRole");
-  const kitchenOrders = document.getElementById("kitchenOrders");
   const searchInput = document.getElementById("searchOrders");
 
-  if (welcomeName) welcomeName.textContent = employee;
+  if (welcomeName) welcomeName.textContent = getEmployee().name;
   if (welcomeRole) welcomeRole.textContent = "Kitchen";
 
-  let orders = JSON.parse(localStorage.getItem("tammy-orders")) || [];
-
-  function renderKitchenOrders(filter = "") {
-    if (!kitchenOrders) return;
-
-    const filteredOrders = orders.filter((order) => {
-      const searchText = filter.toLowerCase();
-
-      return (
-        (order.id || "").toLowerCase().includes(searchText) ||
-        String(order.table || "").toLowerCase().includes(searchText) ||
-        (order.server || "").toLowerCase().includes(searchText) ||
-        (order.status || "").toLowerCase().includes(searchText)
-      );
-    });
-
-    document.getElementById("statTotal").textContent = orders.length;
-    document.getElementById("statSubmitted").textContent = orders.filter(
-      (o) => o.status === "Submitted"
-    ).length;
-    document.getElementById("statInKitchen").textContent = orders.filter(
-      (o) => o.status === "In Kitchen"
-    ).length;
-    document.getElementById("statReady").textContent = orders.filter(
-      (o) => o.status === "Ready"
-    ).length;
-
-    if (filteredOrders.length === 0) {
-      kitchenOrders.innerHTML = `
-        <div class="panel">
-          <h3 style="margin-top:0;">No orders found</h3>
-          <p style="color: var(--muted); margin-bottom:0;">
-            Submitted orders will appear here.
-          </p>
-        </div>
-      `;
-      return;
-    }
-
-    kitchenOrders.innerHTML = filteredOrders
-      .map((order, index) => {
-        const itemsHtml = (order.items && order.items.length)
-          ? order.items.map(item => `
-              <li>
-                ${item.quantity || 1} × ${item.name || "Item"}
-                ${item.modifiers ? `<div style="color: var(--muted); font-size: 14px;">${item.modifiers}</div>` : ""}
-              </li>
-            `).join("")
-          : `<li>No items listed</li>`;
-
-        const realIndex = orders.findIndex((o) => o.id === order.id);
-
-        return `
-          <div class="panel">
-            <div class="section-header" style="margin-bottom: 12px;">
-              <div>
-                <h3 style="margin: 0;">Table ${order.table || "—"}</h3>
-                <p style="margin: 6px 0 0; color: var(--muted);">
-                  Order ID: ${order.id || "N/A"} • Status: ${order.status || "Submitted"}
-                </p>
-              </div>
-            </div>
-
-            <div style="margin-bottom: 12px;">
-              <strong>Server:</strong> ${order.server || "Employee"}<br>
-              <strong>Guests:</strong> ${order.guests || "—"}<br>
-              <strong>Allergies:</strong> ${order.allergies || "None"}<br>
-              <strong>Notes:</strong> ${order.notes || "None"}
-            </div>
-
-            <div style="margin-bottom: 14px;">
-              <strong>Items</strong>
-              <ul style="margin: 8px 0 0 18px; padding: 0;">
-                ${itemsHtml}
-              </ul>
-            </div>
-
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-              <button class="btn-secondary" onclick="updateKitchenStatus(${realIndex}, 'In Kitchen')">
-                Mark In Kitchen
-              </button>
-              <button class="btn-primary" onclick="updateKitchenStatus(${realIndex}, 'Ready')">
-                Mark Ready
-              </button>
-            </div>
-          </div>
-        `;
-      })
-      .join("");
-  }
-
-  window.updateKitchenStatus = function(index, newStatus) {
-    orders[index].status = newStatus;
-    localStorage.setItem("tammy-orders", JSON.stringify(orders));
-    renderKitchenOrders(searchInput ? searchInput.value : "");
-  };
+  updateGlobalStats();
+  renderKitchenOrders();
 
   if (searchInput) {
     searchInput.addEventListener("input", function () {
       renderKitchenOrders(this.value);
     });
   }
-
-  renderKitchenOrders();
 }
+
+/* -----------------------------
+   MANAGER PAGE
+----------------------------- */
 
 function renderManagerStats() {
   const orders = getOrders();
@@ -448,6 +530,7 @@ function renderManagerStats() {
 function renderMenuList() {
   const menuList = document.getElementById("menuList");
   if (!menuList) return;
+
   const menu = getMenu();
 
   menuList.innerHTML = menu.map(item => `
@@ -472,20 +555,52 @@ function removeMenuItem(itemId) {
   renderMenuList();
 }
 
+function renderManagerTables() {
+  const container = document.getElementById("managerTableOverview");
+  if (!container) return;
+
+  const tables = getActiveTables();
+
+  if (!tables.length) {
+    container.innerHTML = '<div class="empty">No active tables at the moment.</div>';
+    return;
+  }
+
+  container.innerHTML = tables.map(table => `
+    <div class="ticket">
+      <div class="row" style="align-items:flex-start">
+        <div>
+          <strong>Table ${escapeHtml(table.tableNumber)}</strong>
+          <div class="table-meta">Server: ${escapeHtml(table.employeeName || table.employeeId || "Unassigned")}</div>
+          <div class="table-meta">Guests: ${escapeHtml(table.guests || "—")}</div>
+          ${table.notes ? `<div class="footer-note" style="margin-top:8px">Notes: ${escapeHtml(table.notes)}</div>` : ""}
+        </div>
+        <span class="badge status-${String(table.status).replace(/\s+/g, "")}">${escapeHtml(table.status || "Open")}</span>
+      </div>
+    </div>
+  `).join("");
+}
+
 function initManagerPage() {
   const employee = populateSessionHeader();
   if (!employee) return;
 
+  if (!isManager()) {
+    window.location.href = "./dashboard.html";
+    return;
+  }
+
   renderManagerStats();
   renderMenuList();
+  renderManagerTables();
 
   const saveBtn = document.getElementById("saveMenuItemBtn");
   if (!saveBtn) return;
 
   saveBtn.addEventListener("click", function () {
-    const name = document.getElementById("newItemName").value.trim();
-    const category = document.getElementById("newItemCategory").value;
-    const price = Number(document.getElementById("newItemPrice").value);
+    const name = document.getElementById("newItemName")?.value.trim();
+    const category = document.getElementById("newItemCategory")?.value;
+    const price = Number(document.getElementById("newItemPrice")?.value);
 
     if (!name || !price) {
       alert("Please enter an item name and price.");
@@ -501,16 +616,10 @@ function initManagerPage() {
     });
 
     saveMenu(menu);
-    document.getElementById("newItemName").value = "";
-    document.getElementById("newItemPrice").value = "";
+
+    if (document.getElementById("newItemName")) document.getElementById("newItemName").value = "";
+    if (document.getElementById("newItemPrice")) document.getElementById("newItemPrice").value = "";
+
     renderMenuList();
   });
-}
-
-
-function getLatestOrderForTable(tableNumber, employeeId = null) {
-  const orders = getOrders()
-    .filter(order => String(order.table) === String(tableNumber) && (!employeeId || order.employeeId === employeeId))
-    .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-  return orders[0] || null;
 }

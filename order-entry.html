@@ -3,91 +3,784 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Order Entry</title>
-  <link rel="stylesheet" href="./style.css" />
+  <title>Tammy’s Bar &amp; Grille | Order Entry</title>
+
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #1e1e1e;
+      --muted: #8a857d;
+      --border: #e4ddd3;
+      --accent: #5b7dbf;
+      --accent-dark: #3f5ea0;
+      --accent-soft: #e9f0fb;
+      --shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+      --danger: #b42318;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(to bottom, #f5f6f8, #edf1f5);
+      color: var(--text);
+      padding: 24px;
+    }
+
+    .page {
+      max-width: 1450px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: var(--accent-dark);
+    }
+
+    .brand p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .session {
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .btn,
+    .btn-secondary,
+    .btn-danger {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    .btn {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .btn:hover {
+      background: var(--accent-dark);
+      border-color: var(--accent-dark);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: #f3f1ed;
+    }
+
+    .btn-danger {
+      background: white;
+      color: var(--danger);
+      border-color: #efc2bc;
+    }
+
+    .btn-danger:hover {
+      background: #fff3f1;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 370px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 20px 20px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-header h2 {
+      margin: 0 0 6px;
+      font-size: 1.2rem;
+    }
+
+    .panel-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .check-body {
+      padding: 18px;
+    }
+
+    .summary-grid {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .summary-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 12px 14px;
+    }
+
+    .summary-label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .summary-value {
+      font-weight: 600;
+      font-size: 0.96rem;
+    }
+
+    .ticket-items {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+      max-height: 380px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .ticket {
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      background: white;
+    }
+
+    .ticket-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .ticket-name {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .ticket-meta {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .ticket-note {
+      margin-top: 8px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .empty {
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      color: var(--muted);
+      background: #fcfcfd;
+    }
+
+    .check-footer {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .totals {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .menu-panel {
+      padding: 18px;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .category-tab {
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .category-tab.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .menu-item {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: white;
+      padding: 28px 24px;
+      cursor: pointer;
+      text-align: left;
+      min-height: 180px;
+      transition: 0.18s ease;
+    }
+
+    .menu-item:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .menu-item h3 {
+      margin: 0 0 16px;
+      font-size: 1.05rem;
+    }
+
+    .menu-item .category {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 18px;
+    }
+
+    .menu-item .price {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 30, 30, 0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 580px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
+      padding: 24px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .modal-header h3 {
+      margin: 0 0 6px;
+      font-size: 1.3rem;
+    }
+
+    .modal-header p {
+      margin: 0;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .modal-close {
+      border: none;
+      background: transparent;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 0.88rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: white;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(91, 125, 191, 0.14);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 1100px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .menu-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 700px) {
+      body {
+        padding: 16px;
+      }
+
+      .menu-grid,
+      .modal-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div class="app">
+  <div class="page">
     <div class="topbar">
-      <div class="panel hero">
-        <p class="eyebrow">Step 2 • Order Entry</p>
-        <h1>Build Ticket</h1>
-        <p>Select menu items, add quantities, and submit the ticket to the kitchen.</p>
+      <div class="brand">
+        <h1>Tammy’s Bar &amp; Grille</h1>
+        <p>Order Entry • POS-style workflow</p>
       </div>
-      <div class="panel quick-card">
-        <div class="header-mini">
-          <div>
-            <h3 style="margin:0 0 8px">Order Snapshot</h3>
-            <p style="margin:0;color:var(--muted)">Employee <strong id="welcomeName">—</strong></p>
-          </div>
-          <button class="btn-secondary" type="button" onclick="logout()">Log Out</button>
+
+      <div class="top-actions">
+        <div class="session">
+          <span id="welcomeName">—</span> • <strong id="welcomeRole">—</strong>
         </div>
-        <div class="mini-stats" style="margin-top:14px">
-          <div class="mini-stat"><span class="label">Table</span><span class="value" id="summaryTable">—</span></div>
-          <div class="mini-stat"><span class="label">Guests</span><span class="value" id="summaryGuests">—</span></div>
-          <div class="mini-stat"><span class="label">Allergies</span><span class="value" id="summaryAllergies">—</span></div>
-          <div class="mini-stat"><span class="label">Items</span><span class="value" id="summaryCount">0</span></div>
-        </div>
+        <button type="button" class="btn-secondary" onclick="window.location.href='./dashboard.html'">Back to Dashboard</button>
+        <button type="button" class="btn-secondary" onclick="logout()">Log Out</button>
       </div>
     </div>
 
     <div class="layout">
-      <aside class="panel sidebar">
-        <h3>Navigation</h3>
-        <a class="nav-link" href="./dashboard.html">Dashboard</a>
-        <a class="nav-link active" href="./create-order.html">Create Order</a>
-        <a class="nav-link" href="./kitchen-queue.html">Kitchen Queue</a>
-        <a class="nav-link" href="./manager.html">Manager Tools</a>
-      </aside>
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Active Check</h2>
+          <p>Review the current order before sending it to the kitchen.</p>
+        </div>
 
-      <main class="content">
-        <section class="panel">
-          <div class="section-header">
-            <div>
-              <h2>Add Menu Item</h2>
-              <p>Choose an item, set quantity, and optionally add a modifier.</p>
+        <div class="check-body">
+          <div class="summary-grid">
+            <div class="summary-box">
+              <div class="summary-label">Table</div>
+              <div class="summary-value" id="summaryTable">—</div>
             </div>
-          </div>
-          <div class="form-grid form-order">
-            <div>
-              <label for="menuItem">Menu Item</label>
-              <select id="menuItem"></select>
-            </div>
-            <div>
-              <label for="itemQty">Qty</label>
-              <input id="itemQty" type="number" min="1" value="1" />
-            </div>
-            <div>
-              <button id="addItemBtn" class="btn-accent" type="button">Add Item</button>
-            </div>
-          </div>
-          <div>
-            <label for="itemModifier">Modifier / Notes</label>
-            <textarea id="itemModifier" placeholder="No onions, extra sauce, sauce on side, etc."></textarea>
-          </div>
-        </section>
 
-        <section class="panel">
-          <div class="section-header">
-            <div>
-              <h2>Current Ticket</h2>
-              <p id="ticketContext">Review the order before sending it to the kitchen.</p>
+            <div class="summary-box">
+              <div class="summary-label">Guests</div>
+              <div class="summary-value" id="summaryGuests">—</div>
+            </div>
+
+            <div class="summary-box">
+              <div class="summary-label">Allergy Alert</div>
+              <div class="summary-value" id="summaryAllergies">—</div>
+            </div>
+
+            <div class="summary-box">
+              <div class="summary-label">Notes</div>
+              <div class="summary-value" id="ticketContext">—</div>
             </div>
           </div>
-          <div class="stack" id="ticketItems"></div>
-          <div class="row" style="margin-top:18px; flex-wrap:wrap;">
-            <button class="btn-secondary" type="button" onclick="window.location.href='./create-order.html'">Back</button>
-            <button class="btn-secondary" type="button" id="clearTicketBtn">Clear Ticket</button>
-            <button class="btn-primary" type="button" id="submitOrderBtn">Submit To Kitchen</button>
+
+          <div class="ticket-items" id="ticketItems">
+            <div class="empty">No menu items added yet.</div>
           </div>
-        </section>
-      </main>
+
+          <div class="check-footer">
+            <div class="totals">
+              <span>Items</span>
+              <span id="summaryCount">0</span>
+            </div>
+
+            <div class="totals">
+              <span>Total</span>
+              <span id="summaryTotal">$0.00</span>
+            </div>
+
+            <button type="button" class="btn" id="submitOrderBtn">Send to Kitchen</button>
+            <button type="button" class="btn-secondary" id="clearTicketBtn">Clear Check</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Menu</h2>
+          <p>Select a category, then click an item to customize it.</p>
+        </div>
+
+        <div class="menu-panel">
+          <div class="category-tabs" id="categoryTabs"></div>
+          <div class="menu-grid" id="menuGrid"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="itemModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="modalItemName">Item Name</h3>
+          <p id="modalItemPrice">$0.00</p>
+        </div>
+        <button type="button" class="modal-close" onclick="closeItemModal()">✕</button>
+      </div>
+
+      <div class="modal-grid">
+        <div class="form-group">
+          <label for="modalQty">Quantity</label>
+          <input type="number" id="modalQty" min="1" value="1" />
+        </div>
+
+        <div class="form-group">
+          <label for="modalSeat">Seat Number</label>
+          <input type="number" id="modalSeat" min="1" placeholder="Optional" />
+        </div>
+
+        <div class="form-group" id="modalSideGroup">
+          <label for="modalSide">Side</label>
+          <select id="modalSide">
+            <option value="">No side</option>
+            <option value="Fries">Fries</option>
+            <option value="Side Salad">Side Salad</option>
+            <option value="Roasted Vegetables">Roasted Vegetables</option>
+            <option value="Rice">Rice</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label for="modalModifier">Modifier / Special Request</label>
+          <input type="text" id="modalModifier" placeholder="Example: no onions, extra sauce, dressing on side" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" onclick="closeItemModal()">Cancel</button>
+        <button type="button" class="btn" onclick="addSelectedItemToCheck()">Add to Check</button>
+      </div>
     </div>
   </div>
 
   <script src="./script.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", initOrderEntryPage);
+    const POS_MENU = {
+      Drinks: [
+        { id: 101, name: "Sparkling Water", category: "Drinks", price: 5 },
+        { id: 102, name: "Iced Tea", category: "Drinks", price: 4 },
+        { id: 103, name: "Sangria", category: "Drinks", price: 12 }
+      ],
+      Apps: [
+        { id: 201, name: "Patatas Bravas", category: "Apps", price: 11 },
+        { id: 202, name: "Garlic Shrimp", category: "Apps", price: 15 },
+        { id: 203, name: "Flatbread", category: "Apps", price: 13 }
+      ],
+      Entrees: [
+        { id: 301, name: "Braised Short Rib", category: "Entrees", price: 28 },
+        { id: 302, name: "Salmon Bowl", category: "Entrees", price: 24 },
+        { id: 303, name: "Steak Frites", category: "Entrees", price: 29 }
+      ],
+      Desserts: [
+        { id: 401, name: "Cheesecake", category: "Desserts", price: 9 },
+        { id: 402, name: "Churros", category: "Desserts", price: 8 }
+      ]
+    };
+
+    let activeCategory = "Drinks";
+    let selectedItem = null;
+    let currentDraft = null;
+
+    function formatMoneyLocal(value) {
+      return `$${Number(value).toFixed(2)}`;
+    }
+
+    function calculateTotal(items) {
+      return items.reduce((sum, item) => {
+        return sum + (Number(item.price) * Number(item.quantity || 1));
+      }, 0);
+    }
+
+    function renderCategories() {
+      const container = document.getElementById("categoryTabs");
+      const categories = Object.keys(POS_MENU);
+
+      container.innerHTML = categories.map(category => `
+        <button
+          type="button"
+          class="category-tab ${category === activeCategory ? "active" : ""}"
+          onclick="setCategory('${category}')"
+        >
+          ${category}
+        </button>
+      `).join("");
+    }
+
+    function setCategory(category) {
+      activeCategory = category;
+      renderCategories();
+      renderMenuItems();
+    }
+
+    function renderMenuItems() {
+      const grid = document.getElementById("menuGrid");
+      const items = POS_MENU[activeCategory] || [];
+
+      grid.innerHTML = items.map(item => `
+        <button type="button" class="menu-item" onclick="openItemModal(${item.id})">
+          <h3>${item.name}</h3>
+          <div class="category">${item.category}</div>
+          <div class="price">${formatMoneyLocal(item.price)}</div>
+        </button>
+      `).join("");
+    }
+
+    function openItemModal(itemId) {
+      const allItems = Object.values(POS_MENU).flat();
+      selectedItem = allItems.find(item => item.id === itemId) || null;
+      if (!selectedItem) return;
+
+      document.getElementById("modalItemName").textContent = selectedItem.name;
+      document.getElementById("modalItemPrice").textContent = formatMoneyLocal(selectedItem.price);
+      document.getElementById("modalQty").value = 1;
+      document.getElementById("modalSeat").value = "";
+      document.getElementById("modalSide").value = "";
+      document.getElementById("modalModifier").value = "";
+
+      const sideGroup = document.getElementById("modalSideGroup");
+      if (sideGroup) {
+        sideGroup.style.display = selectedItem.category === "Entrees" ? "flex" : "none";
+        sideGroup.style.flexDirection = "column";
+      }
+
+      document.getElementById("itemModal").style.display = "flex";
+    }
+
+    function closeItemModal() {
+      document.getElementById("itemModal").style.display = "none";
+      selectedItem = null;
+    }
+
+    function renderDraftLocal() {
+      const ticketItems = document.getElementById("ticketItems");
+      const summaryCount = document.getElementById("summaryCount");
+      const summaryTotal = document.getElementById("summaryTotal");
+
+      if (!currentDraft || !Array.isArray(currentDraft.items)) return;
+
+      summaryCount.textContent = currentDraft.items.length;
+      summaryTotal.textContent = formatMoneyLocal(calculateTotal(currentDraft.items));
+
+      if (!currentDraft.items.length) {
+        ticketItems.innerHTML = `<div class="empty">No menu items added yet.</div>`;
+        return;
+      }
+
+      ticketItems.innerHTML = currentDraft.items.map((item, index) => `
+        <div class="ticket">
+          <div class="ticket-top">
+            <div>
+              <div class="ticket-name">${item.name}</div>
+              <div class="ticket-meta">Qty ${item.quantity} • ${formatMoneyLocal(item.price)} each</div>
+              ${item.seat ? `<div class="ticket-note">Seat: ${item.seat}</div>` : ""}
+              ${item.side ? `<div class="ticket-note">Side: ${item.side}</div>` : ""}
+              ${item.modifier ? `<div class="ticket-note">Modifier: ${item.modifier}</div>` : ""}
+            </div>
+            <button type="button" class="btn-danger" onclick="removeDraftItemLocal(${index})">Remove</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function removeDraftItemLocal(index) {
+      currentDraft.items.splice(index, 1);
+      saveDraftOrder(currentDraft);
+      renderDraftLocal();
+    }
+
+    function addSelectedItemToCheck() {
+      if (!selectedItem) return;
+
+      const qty = Math.max(1, Number(document.getElementById("modalQty").value) || 1);
+      const seat = document.getElementById("modalSeat").value.trim();
+      const side = document.getElementById("modalSide").value.trim();
+      const modifier = document.getElementById("modalModifier").value.trim();
+
+      currentDraft.items.push({
+        id: selectedItem.id,
+        name: selectedItem.name,
+        category: selectedItem.category,
+        price: selectedItem.price,
+        quantity: qty,
+        seat: seat || "",
+        side: selectedItem.category === "Entrees" ? side : "",
+        modifier
+      });
+
+      saveDraftOrder(currentDraft);
+      renderDraftLocal();
+      closeItemModal();
+    }
+
+    function setupOrderEntryPage() {
+      const empId = requireLogin();
+      if (!empId) return;
+
+      const employee = getEmployee();
+      const table = localStorage.getItem("active-table") || "";
+      const guests = localStorage.getItem("active-guests") || "—";
+      const allergies = localStorage.getItem("active-allergies") || "—";
+      const notes = localStorage.getItem("active-notes") || "";
+
+      if (!table) {
+        window.location.href = "./create-order.html";
+        return;
+      }
+
+      document.getElementById("welcomeName").textContent = employee.name;
+      document.getElementById("welcomeRole").textContent = employee.role;
+      document.getElementById("summaryTable").textContent = table;
+      document.getElementById("summaryGuests").textContent = guests || "—";
+      document.getElementById("summaryAllergies").textContent = allergies || "—";
+      document.getElementById("ticketContext").textContent = notes || "No additional notes";
+
+      currentDraft = getDraftOrder();
+      currentDraft.table = table;
+      currentDraft.guests = guests;
+      currentDraft.allergies = allergies;
+      currentDraft.notes = notes;
+      currentDraft.employeeId = empId;
+      currentDraft.employeeName = employee.name;
+      currentDraft.items = Array.isArray(currentDraft.items) ? currentDraft.items : [];
+      saveDraftOrder(currentDraft);
+
+      renderCategories();
+      renderMenuItems();
+      renderDraftLocal();
+
+      document.getElementById("clearTicketBtn").addEventListener("click", function () {
+        currentDraft.items = [];
+        saveDraftOrder(currentDraft);
+        renderDraftLocal();
+      });
+
+      document.getElementById("submitOrderBtn").addEventListener("click", function () {
+        if (!currentDraft.items.length) {
+          alert("Please add at least one item before sending the order.");
+          return;
+        }
+
+        const orders = getOrders();
+        orders.push({
+          id: `T${currentDraft.table}-${Date.now().toString().slice(-5)}`,
+          table: currentDraft.table,
+          guests: currentDraft.guests,
+          allergies: currentDraft.allergies,
+          notes: currentDraft.notes,
+          employeeId: currentDraft.employeeId,
+          employeeName: currentDraft.employeeName,
+          status: "Submitted",
+          createdAt: new Date().toLocaleString(),
+          items: currentDraft.items
+        });
+
+        saveOrders(orders);
+        updateTableStatus(currentDraft.table, "Submitted");
+
+        alert("Order sent to kitchen successfully");
+
+        localStorage.removeItem("tammy-draft-order");
+        localStorage.removeItem("active-table");
+        localStorage.removeItem("active-guests");
+        localStorage.removeItem("active-allergies");
+        localStorage.removeItem("active-notes");
+
+        window.location.href = "./dashboard.html";
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", setupOrderEntryPage);
   </script>
 </body>
 </html>

@@ -83,6 +83,14 @@
       text-align: center;
       display: none;
     }
+
+    .hint {
+      margin-top: 10px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -107,10 +115,21 @@
       <div class="error" id="errorMsg">Invalid PIN</div>
 
       <button type="submit" class="login-btn">Enter System</button>
+
+      <div class="hint">
+        Demo logins:<br>
+        Server 1: 1234 &nbsp;|&nbsp; Server 2: 2222 &nbsp;|&nbsp; Manager: 9999
+      </div>
     </form>
   </div>
 
   <script>
+    const EMPLOYEES = {
+      "1234": { id: "1234", name: "Emma", role: "server", dashboard: "./dashboard.html" },
+      "2222": { id: "2222", name: "Liam", role: "server", dashboard: "./dashboard.html" },
+      "9999": { id: "9999", name: "Sophia", role: "manager", dashboard: "./manager.html" }
+    };
+
     const form = document.getElementById("loginForm");
     const pinInput = document.getElementById("employeePin");
     const errorMsg = document.getElementById("errorMsg");
@@ -123,9 +142,13 @@
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
-      if (pinInput.value === "1234") {
-        localStorage.setItem("tammy-session-pin", pinInput.value);
-        window.location.href = "./dashboard.html";
+      const employee = EMPLOYEES[pinInput.value];
+
+      if (employee) {
+        localStorage.setItem("tammy-session-pin", employee.id);
+        localStorage.setItem("tammy-session-name", employee.name);
+        localStorage.setItem("tammy-session-role", employee.role);
+        window.location.href = employee.dashboard;
       } else {
         errorMsg.style.display = "block";
         pinInput.value = "";

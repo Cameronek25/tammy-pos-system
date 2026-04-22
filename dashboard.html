@@ -3,43 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tammy's Bar &amp; Grille</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Tammy’s Bar &amp; Grille | Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --surface: #ffffff;
       --text: #1e1e1e;
       --muted: #8f887f;
       --border: #e5ded4;
-      --accent: #5b7dbf;
-      --accent-soft: #d6deec;
-      --shadow: 0 8px 22px rgba(0, 0, 0, 0.05);
-      --ready: #e4f3e6;
-      --cooking: #f5e7c5;
-      --submitted: #e3ecf9;
+      --accent: #6a5e99;
+      --accent-soft: #dfe7f5;
+      --shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
       --open: #efe9df;
+      --submitted: #e3ecf9;
+      --inkitchen: #f5e7c5;
+      --ready: #e4f3e6;
+      --delivered: #ececec;
     }
 
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      padding: 32px;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(to bottom, #f4f6f9, #ebeff2);
-      color: var(--text);
-      line-height: 1.5;
+    * {
+      box-sizing: border-box;
     }
 
-    .page { max-width: 1280px; margin: 0 auto; }
+    html, body {
+  height: 100%;
+}
+
+body {
+   margin: 0;
+  padding: 28px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(to bottom, #f4f6f9, #ebeff2);
+  color: var(--text);
+  min-height: 100vh; 
+}
+
+.page {
+  max-width: 1240px;
+  margin: 0 auto;
+
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+}
 
     .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 18px;
-      border-radius: 12px;
-      margin-bottom: 34px;
+      gap: 16px;
+      padding: 16px 20px;
+      border-radius: 16px;
+      margin-bottom: 28px;
       background: var(--accent-soft);
     }
 
@@ -47,11 +62,20 @@
       font-family: 'Playfair Display', serif;
       font-size: 24px;
       font-weight: 700;
-      letter-spacing: 0.4px;
     }
 
-    .topbar-right { display: flex; align-items: center; gap: 16px; }
-    .employee-text { font-size: 14px; color: var(--muted); font-weight: 500; }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .employee-text {
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
+    }
 
     .logout-btn {
       border: 1px solid var(--border);
@@ -63,36 +87,33 @@
       font-weight: 600;
       cursor: pointer;
       box-shadow: var(--shadow);
-      transition: all 0.18s ease;
     }
 
     .logout-btn:hover {
       background: #eef3ff;
-      border-color: var(--accent);
-      transform: translateY(-1px);
     }
 
     .actions {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 18px;
-      margin-bottom: 46px;
+      gap: 16px;
+      margin-bottom: 34px;
     }
 
     .action-card {
-      min-height: 92px;
+      min-height: 86px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 20px;
+      border-radius: 18px;
       box-shadow: var(--shadow);
       text-decoration: none;
       color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 17px;
+      gap: 12px;
+      font-size: 16px;
       font-weight: 600;
-      gap: 14px;
       transition: all 0.18s ease;
     }
 
@@ -109,63 +130,135 @@
 
     .action-icon {
       font-size: 15px;
-      opacity: 0.65;
-      display: inline-flex;
-      align-items: center;
+      opacity: 0.75;
     }
 
-    .tables-header { margin-top: 6px; margin-bottom: 26px; }
-    .tables-header h2 { margin: 0 0 6px; font-size: 24px; font-weight: 700; }
-    .tables-header p { margin: 0; font-size: 14px; color: var(--muted); font-weight: 500; }
+    .section-header {
+      margin-bottom: 20px;
+    }
+
+    .section-header h2 {
+      margin: 0 0 6px;
+      font-size: 24px;
+    }
+
+    .section-header p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 500;
+    }
 
     .tables-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 34px 44px;
-      justify-items: center;
+      gap: 24px;
     }
 
-    .table-circle {
-      width: 190px;
-      height: 190px;
-      border-radius: 50%;
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px;
       text-decoration: none;
       color: var(--text);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
-      border: 1px solid rgba(0, 0, 0, 0.03);
+      box-shadow: var(--shadow);
       transition: all 0.18s ease;
-      text-align: center;
-      padding: 16px;
+      display: block;
     }
 
-    .table-circle:hover { transform: scale(1.04); }
-    .table-circle.ready { background: var(--ready); }
-    .table-circle.cooking { background: var(--cooking); }
-    .table-circle.submitted { background: var(--submitted); }
-    .table-circle.open { background: var(--open); }
+    .table-card:hover {
+      transform: translateY(-2px);
+    }
 
-    .table-number { font-size: 38px; font-weight: 700; line-height: 1; margin-bottom: 10px; }
-    .table-status { font-size: 13px; color: var(--muted); font-weight: 600; }
-    .table-meta { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .table-card.open {
+      background: var(--open);
+    }
 
-    @media (max-width: 1100px) {
-      .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .tables-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .table-card.submitted {
+      background: var(--submitted);
+    }
+
+    .table-card.inkitchen {
+      background: var(--inkitchen);
+    }
+
+    .table-card.ready {
+      background: var(--ready);
+    }
+
+    .table-card.delivered {
+      background: var(--delivered);
+    }
+
+    .table-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .table-number {
+      font-size: 30px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .status-badge {
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(255,255,255,0.7);
+    }
+
+    .table-meta {
+      font-size: 14px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .empty-state {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 36px 24px;
+      text-align: center;
+      color: var(--muted);
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 1000px) {
+      .actions,
+      .tables-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 700px) {
-      body { padding: 20px; }
-      .topbar { flex-direction: column; align-items: flex-start; gap: 12px; }
-      .topbar-right { width: 100%; justify-content: space-between; }
-      .actions, .tables-grid { grid-template-columns: 1fr; }
-      .brand { font-size: 20px; }
-      .action-card { min-height: 84px; font-size: 16px; }
-      .table-circle { width: 180px; height: 180px; }
-      .table-number { font-size: 34px; }
+      body {
+        padding: 20px;
+      }
+
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .topbar-right {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .actions,
+      .tables-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .brand {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
@@ -173,62 +266,119 @@
   <div class="page">
     <div class="topbar">
       <div class="brand">Tammy’s Bar &amp; Grille</div>
+
       <div class="topbar-right">
-        <span class="employee-text">Employee <strong id="employeeId"></strong></span>
+        <span class="employee-text">
+          <span id="welcomeName">—</span> • <strong id="welcomeRole">—</strong>
+        </span>
         <button type="button" class="logout-btn" onclick="logout()">Log Out</button>
       </div>
     </div>
 
-    <div class="actions">
-      <a href="./dashboard.html" class="action-card active"><span class="action-icon">◫</span><span>Dashboard</span></a>
-      <a href="./create-order.html" class="action-card"><span class="action-icon">＋</span><span>Create Order</span></a>
-      <a href="./kitchen-queue.html" class="action-card"><span class="action-icon">≣</span><span>Kitchen Queue</span></a>
-      <a href="./manager.html" class="action-card"><span class="action-icon">⚙</span><span>Manager Tools</span></a>
-    </div>
+   <div class="actions">
+  <a href="./dashboard.html" class="action-card active">
+    <span>Dashboard</span>
+  </a>
 
-    <div class="tables-header">
-      <h2>My Tables</h2>
-      <p>Select a table to manage orders.</p>
+  <a href="./create-order.html" class="action-card">
+    <span>Start Table</span>
+  </a>
+
+  <a href="./kitchen-queue.html" class="action-card">
+    <span>Kitchen Queue</span>
+  </a>
+
+  <a href="./manager.html" class="action-card" id="managerNav">
+    <span>Manager View</span>
+  </a>
+</div>
+
+    <div class="section-header">
+      <h2 id="dashboardTitle">My Tables</h2>
+      <p id="dashboardSubtitle">View and manage active tables.</p>
     </div>
 
     <div class="tables-grid" id="tablesGrid"></div>
   </div>
 
-    <script src="./script.js"></script>
+  <script src="./script.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    function getStatusClass(status) {
+      const normalized = String(status || "Open").toLowerCase().replace(/\s+/g, "");
+
+      if (normalized === "submitted") return "submitted";
+      if (normalized === "inkitchen") return "inkitchen";
+      if (normalized === "ready") return "ready";
+      if (normalized === "delivered") return "delivered";
+      return "open";
+    }
+
+    function renderDashboardTables() {
       const empId = requireLogin();
       if (!empId) return;
 
-      const display = document.getElementById("employeeId");
-      if (display) display.textContent = empId;
+      const employee = populateSessionHeader();
+      if (!employee) return;
 
-      const tableNumbers = ["1","2","3","4","5","6","7","8","9"];
+      const title = document.getElementById("dashboardTitle");
+      const subtitle = document.getElementById("dashboardSubtitle");
       const grid = document.getElementById("tablesGrid");
 
-      grid.innerHTML = tableNumbers.map(tableNumber => {
-        const order = getLatestOrderForTable(tableNumber, empId);
+      const tables = isManager() ? getActiveTables() : getServerTables(empId);
 
-        let statusClass = "open";
-        let statusLabel = "Open";
-        let metaLabel = "No order yet";
+      if (title) {
+        title.textContent = isManager() ? "Restaurant Overview" : "My Tables";
+      }
 
-        if (order) {
-          if (order.status === "Ready") statusClass = "ready";
-          else if (order.status === "In Kitchen") statusClass = "cooking";
-          else if (order.status === "Submitted") statusClass = "submitted";
+      if (subtitle) {
+        subtitle.textContent = isManager()
+          ? "Monitor all active tables and assigned servers."
+          : "View and manage your active tables.";
+      }
 
-          statusLabel = order.status;
-          metaLabel = `${order.items.length} item(s)`;
-        }
+      if (!tables.length) {
+        grid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <h3 style="margin-top:0; color:#1e1e1e;">No active tables</h3>
+            <p style="margin-bottom:18px;">Start a new table to begin service.</p>
+            <a href="./create-order.html" class="action-card" style="display:inline-flex; min-height:auto; padding:14px 18px;">
+              <span class="action-icon">＋</span>
+              <span>Start Table</span>
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = tables.map(table => {
+        const latestOrder = getLatestOrderForTable(table.tableNumber);
+        const status = latestOrder ? latestOrder.status : (table.status || "Open");
+        const statusClass = getStatusClass(status);
+
+        const metaLine = isManager()
+          ? `Server: ${table.employeeName || table.employeeId || "Unassigned"}`
+          : `Guests: ${table.guests || "—"}`;
+
+        const detailLine = latestOrder
+          ? `${latestOrder.items.length} item(s) • ${latestOrder.createdAt || ""}`
+          : `No submitted order yet`;
 
         return `
-          <a href="./table-details.html?table=${tableNumber}" class="table-circle ${statusClass}">
-            <span class="table-number">${tableNumber}</span>
-            <span class="table-status">${statusLabel}</span>
-            <span class="table-meta">${metaLabel}</span>
-          </a>`;
+          <a href="./order-entry.html" class="table-card ${statusClass}">
+            <div class="table-top">
+              <div class="table-number">Table ${table.tableNumber}</div>
+              <div class="status-badge">${status}</div>
+            </div>
+
+            <div class="table-meta">${metaLine}</div>
+            <div class="table-meta">${detailLine}</div>
+          </a>
+        `;
       }).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      renderDashboardTables();
     });
   </script>
 </body>
