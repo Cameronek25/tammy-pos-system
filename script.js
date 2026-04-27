@@ -1,7 +1,8 @@
 const EMPLOYEES = {
   "1234": { id: "1234", name: "Emma", role: "Server" },
   "2222": { id: "2222", name: "Liam", role: "Server" },
-  "9999": { id: "9999", name: "Sophia", role: "Manager" }
+  "9999": { id: "9999", name: "Sophia", role: "Manager" },
+  "3333": { id: "3333", name: "Kitchen Staff", role: "Kitchen" }
 };
 
 const DEFAULT_MENU = [
@@ -48,6 +49,12 @@ function requireLogin() {
     return null;
   }
   return empId;
+}
+
+if (employee.role === "Kitchen") {
+  window.location.href = "kitchen-queue.html";
+} else {
+  window.location.href = "dashboard.html";
 }
 
 /* -----------------------------
